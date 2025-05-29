@@ -2,9 +2,12 @@ package com.murilo.libraryapi.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -32,6 +35,17 @@ public class Book {
 
     @Column(name = "price", precision = 18, scale = 2)
     private BigDecimal price;
+
+    @CreatedDate
+    @Column(name = "registration_date")
+    private LocalDateTime registrationDate;
+
+    @LastModifiedDate
+    @Column(name = "update_date")
+    private LocalDateTime updateDate;
+
+    @Column(name = "id_user")
+    private UUID idUser;
 
     @ManyToOne
     @JoinColumn(name = "id_author")

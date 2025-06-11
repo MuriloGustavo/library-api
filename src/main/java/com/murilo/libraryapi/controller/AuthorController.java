@@ -3,6 +3,7 @@ package com.murilo.libraryapi.controller;
 import com.murilo.libraryapi.dto.AuthorDTO;
 import com.murilo.libraryapi.model.Author;
 import com.murilo.libraryapi.service.AuthorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class AuthorController {
     private final AuthorService service;
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody AuthorDTO authorDTO) {
+    public ResponseEntity<Void> create(@RequestBody @Valid AuthorDTO authorDTO) {
         Author author = authorDTO.mapToAuthor();
         service.create(author);
 
@@ -53,7 +54,7 @@ public class AuthorController {
         @RequestParam(value = "name", required = false) String name,
         @RequestParam(value = "nationality", required = false) String nationality
     ) {
-        List<AuthorDTO> authors = service.search(name, nationality)
+        List<AuthorDTO> authors = service.searchByExample(name, nationality)
                 .stream()
                 .map(AuthorDTO::mapToAuthorDTO)
                 .toList();
@@ -63,7 +64,7 @@ public class AuthorController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> update(
-            @PathVariable("id") String id, @RequestBody AuthorDTO authorDTO
+            @PathVariable("id") String id, @RequestBody @Valid AuthorDTO authorDTO
     ) {
         return service.findById(UUID.fromString(id))
                 .map(author -> {

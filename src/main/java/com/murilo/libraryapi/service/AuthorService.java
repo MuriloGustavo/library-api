@@ -2,7 +2,10 @@ package com.murilo.libraryapi.service;
 
 import com.murilo.libraryapi.model.Author;
 import com.murilo.libraryapi.repository.AuthorRepository;
+import com.murilo.libraryapi.validator.AuthorValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +16,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthorService {
     private final AuthorRepository repository;
+    private final AuthorValidator validator;
 
     public void create(Author author) {
+        validator.validate(author);
         repository.save(author);
     }
 
@@ -39,7 +44,24 @@ public class AuthorService {
         return repository.findAll();
     }
 
+    public List<Author> searchByExample(String name, String nationality) {
+        var author = new Author();
+        author.setName(name);
+        author.setNationality(nationality);
+
+        ExampleMatcher matcher = ExampleMatcher
+                .matching()
+                .withIgnoreCase("id", "registrationDate", "updateDate")
+                .withIgnoreNullValues()
+                .withIgnoreCase()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+
+        Example<Author> authorExample = Example.of(author, matcher);
+        return repository.findAll(authorExample);
+    }
+
     public void update(Author author) {
+        validator.validate(author);
         repository.save(author);
     }
 

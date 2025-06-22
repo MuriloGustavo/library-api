@@ -46,7 +46,7 @@ public class DatabaseConfiguration {
         config.setConnectionTimeout(100000); //timeout to get a connection
         config.setConnectionTestQuery("select 1"); //test query
 
-        System.out.println("Conectou");
+        System.out.println("Connected");
 
         return new HikariDataSource(config);
     }

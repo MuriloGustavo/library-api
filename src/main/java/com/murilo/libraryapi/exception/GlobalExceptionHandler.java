@@ -35,4 +35,14 @@ public class GlobalExceptionHandler {
     public ResponseErrorDTO handleDuplicateRegisterException(DuplicateRegisterException ex) {
         return ResponseErrorDTO.conflictResponse(ex.getMessage());
     }
+
+    @ExceptionHandler(InvalidFieldException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ResponseErrorDTO handleInvalidFieldException(InvalidFieldException ex) {
+        return new ResponseErrorDTO(
+                HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                "Validation error",
+                List.of(new FieldErrorDTO(ex.getField(), ex.getMessage()))
+        );
+    }
 }

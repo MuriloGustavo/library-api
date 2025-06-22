@@ -1,13 +1,13 @@
 package com.murilo.libraryapi.controller;
 
 import com.murilo.libraryapi.dto.AuthorDTO;
+import com.murilo.libraryapi.mapper.AuthorMapper;
 import com.murilo.libraryapi.model.Author;
 import com.murilo.libraryapi.service.AuthorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -16,27 +16,22 @@ import java.util.UUID;
 @RestController
 @RequestMapping(value = "/authors")
 @RequiredArgsConstructor
-public class AuthorController {
+public class AuthorController implements GenericController {
     private final AuthorService service;
+    private final AuthorMapper mapper;
 
     @PostMapping
     public ResponseEntity<Void> create(@RequestBody @Valid AuthorDTO authorDTO) {
-        Author author = authorDTO.mapToAuthor();
+        Author author = mapper.toEntity(authorDTO);
         service.create(author);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(author.getId())
-                .toUri();
-
+        URI location = generatedHeaderLocation(author.getId());
         return ResponseEntity.created(location).build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<AuthorDTO> findById(@PathVariable("id") String id) {
         return service.findById(UUID.fromString(id))
-                .map(author -> ResponseEntity.ok(AuthorDTO.mapToAuthorDTO(author)))
+                .map(author -> ResponseEntity.ok(mapper.toDTO(author)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -56,9 +51,8 @@ public class AuthorController {
     ) {
         List<AuthorDTO> authors = service.searchByExample(name, nationality)
                 .stream()
-                .map(AuthorDTO::mapToAuthorDTO)
+                .map(mapper::toDTO)
                 .toList();
-
        return ResponseEntity.ok(authors);
     }
 

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "book")
+@Table(name = "books")
 @Data
 @EntityListeners(AuditingEntityListener.class)
 public class Book {
@@ -46,8 +46,9 @@ public class Book {
     @Column(name = "update_date")
     private LocalDateTime updateDate;
 
-    @Column(name = "id_user")
-    private UUID idUser;
+    @ManyToOne
+    @JoinColumn(name = "id_user")
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "id_author")

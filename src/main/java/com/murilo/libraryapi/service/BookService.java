@@ -3,6 +3,7 @@ package com.murilo.libraryapi.service;
 import com.murilo.libraryapi.model.Book;
 import com.murilo.libraryapi.model.GenderBook;
 import com.murilo.libraryapi.repository.BookRepository;
+import com.murilo.libraryapi.security.SecurityService;
 import com.murilo.libraryapi.validator.BookValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,9 +22,11 @@ import static com.murilo.libraryapi.repository.spec.BookSpec.*;
 public class BookService {
     private final BookRepository repository;
     private final BookValidator validator;
+    private final SecurityService securityService;
 
     public void create(Book book) {
         validator.validate(book);
+        book.setUser(securityService.findByUsername());
         repository.save(book);
     }
 

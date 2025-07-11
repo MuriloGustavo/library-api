@@ -7,6 +7,7 @@ import com.murilo.libraryapi.service.AuthorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -21,6 +22,7 @@ public class AuthorController implements GenericController {
     private final AuthorMapper mapper;
 
     @PostMapping
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Void> create(@RequestBody @Valid AuthorDTO authorDTO) {
         Author author = mapper.toEntity(authorDTO);
         service.create(author);
@@ -29,6 +31,7 @@ public class AuthorController implements GenericController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('OPERATOR', 'MANAGER')")
     public ResponseEntity<AuthorDTO> findById(@PathVariable("id") String id) {
         return service.findById(UUID.fromString(id))
                 .map(author -> ResponseEntity.ok(mapper.toDTO(author)))
@@ -36,6 +39,7 @@ public class AuthorController implements GenericController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<?> delete(@PathVariable("id") String id) {
         return service.findById(UUID.fromString(id))
                 .map(author -> {
@@ -45,6 +49,7 @@ public class AuthorController implements GenericController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('OPERATOR', 'MANAGER')")
     public ResponseEntity<List<AuthorDTO>> search(
         @RequestParam(value = "name", required = false) String name,
         @RequestParam(value = "nationality", required = false) String nationality
@@ -57,6 +62,7 @@ public class AuthorController implements GenericController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('OPERATOR', 'MANAGER')")
     public ResponseEntity<Object> update(
             @PathVariable("id") String id, @RequestBody @Valid AuthorDTO authorDTO
     ) {

@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -23,6 +24,7 @@ public class BookController implements GenericController {
     private final BookMapper mapper;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('OPERATOR', 'MANAGER')")
     public ResponseEntity<Object> create(@RequestBody @Valid RegisterBookDTO bookDTO) {
         Book book = mapper.toEntity(bookDTO);
         service.create(book);
@@ -31,6 +33,7 @@ public class BookController implements GenericController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('OPERATOR', 'MANAGER')")
     public ResponseEntity<SearchResultBookDTO> findById(@PathVariable("id") String id) {
         return service.findById(UUID.fromString(id))
                 .map(book -> ResponseEntity.ok(mapper.toDTO(book)))
@@ -38,6 +41,7 @@ public class BookController implements GenericController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('OPERATOR', 'MANAGER')")
     public ResponseEntity<?> delete(@PathVariable("id") String id) {
         return service.findById(UUID.fromString(id))
                 .map(book -> {
@@ -47,6 +51,7 @@ public class BookController implements GenericController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('OPERATOR', 'MANAGER')")
     public ResponseEntity<Page<SearchResultBookDTO>> search(
             @RequestParam(value = "isbn", required = false) String isbn,
             @RequestParam(value = "title", required = false) String title,
@@ -62,6 +67,7 @@ public class BookController implements GenericController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('OPERATOR', 'MANAGER')")
     public ResponseEntity<Object> update(
             @PathVariable("id") String id, @RequestBody @Valid RegisterBookDTO bookDTO
     ) {

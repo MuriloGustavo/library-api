@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "author", schema = "public")
+@Table(name = "authors", schema = "public")
 @Setter
 @Getter
 @Builder
@@ -46,6 +46,7 @@ public class Author {
     @Column(name = "update_date")
     private LocalDateTime updateDate;
 
-    @Column(name = "id_user")
-    private UUID idUser;
+    @ManyToOne
+    @JoinColumn(name = "id_user")
+    private User user;
 }

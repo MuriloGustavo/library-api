@@ -2,6 +2,7 @@ package com.murilo.libraryapi.service;
 
 import com.murilo.libraryapi.model.Author;
 import com.murilo.libraryapi.repository.AuthorRepository;
+import com.murilo.libraryapi.security.SecurityService;
 import com.murilo.libraryapi.validator.AuthorValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
@@ -17,9 +18,11 @@ import java.util.UUID;
 public class AuthorService {
     private final AuthorRepository repository;
     private final AuthorValidator validator;
+    private final SecurityService securityService;
 
     public void create(Author author) {
         validator.validate(author);
+        author.setUser(securityService.findByUsername());
         repository.save(author);
     }
 
